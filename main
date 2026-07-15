@@ -17,8 +17,11 @@ SENT_MEMBERS_FILE = "sent_members.txt"
 
 # دالة لحفظ الـ ID الذي تم الإرسال له
 def save_sent_member(member_id):
-    with open(SENT_MEMBERS_FILE, "a") as f:
-        f.write(str(member_id) + "\n")
+    try:
+        with open(SENT_MEMBERS_FILE, "a") as f:
+            f.write(str(member_id) + "\n")
+    except Exception as e:
+        print(f"Error saving to file: {e}")
 
 # دالة لجلب قائمة الـ IDs التي تم الإرسال لها مسبقاً
 def get_sent_members():
