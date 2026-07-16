@@ -61,7 +61,7 @@ class DMModal(discord.ui.Modal, title='إرسال رسالة جماعية'):
                 continue
         
         is_running = False
-        await interaction.followup.send("🏁 انتهت العملية.")
+        await interaction.followup.send("🏁 انتهت عملية الارسال.")
 
 @bot.event
 async def on_ready():
@@ -72,14 +72,14 @@ async def on_ready():
 async def send_dm(interaction: discord.Interaction):
     await interaction.response.send_modal(DMModal())
 
-@bot.tree.command(name="status", description="عدد الرسائل المرسلة")
+@bot.tree.command(name="status", description="معرفة عدد الرسائل المرسلة")
 async def status(interaction: discord.Interaction):
     await interaction.response.send_message(f"تم إرسال {sent_count} رسالة.", ephemeral=True)
 
-@bot.tree.command(name="stop", description="إيقاف العملية")
+@bot.tree.command(name="stop", description="إيقاف عملية الارسال")
 async def stop(interaction: discord.Interaction):
     global is_running
     is_running = False
-    await interaction.response.send_message("🛑 تم إيقاف العملية.")
+    await interaction.response.send_message("🛑 تم إيقاف عملية الارسال.")
 
 bot.run(os.getenv('TOKEN'))
