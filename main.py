@@ -15,15 +15,10 @@ is_running = False
 sent_count = 0
 SENT_MEMBERS_FILE = "sent_members.txt"
 
-# دالة لحفظ الـ ID الذي تم الإرسال له
 def save_sent_member(member_id):
-    try:
-        with open(SENT_MEMBERS_FILE, "a") as f:
-            f.write(str(member_id) + "\n")
-    except Exception as e:
-        print(f"Error saving to file: {e}")
+    with open(SENT_MEMBERS_FILE, "a") as f:
+        f.write(str(member_id) + "\n")
 
-# دالة لجلب قائمة الـ IDs التي تم الإرسال لها مسبقاً
 def get_sent_members():
     if not os.path.exists(SENT_MEMBERS_FILE):
         return set()
@@ -34,7 +29,7 @@ class DMModal(discord.ui.Modal, title='إرسال رسالة جماعية'):
     message_input = discord.ui.TextInput(
         label='اكتب الرسالة هنا',
         style=discord.TextStyle.paragraph,
-        placeholder='...أدخل نص الرسالة التي تريد إرسالها للأعضاء...',
+        placeholder='...أدخل نص الرسالة...',
         required=True,
         max_length=1000,
     )
@@ -51,40 +46,37 @@ class DMModal(discord.ui.Modal, title='إرسال رسالة جماعية'):
         for member in members:
             if not is_running: break
             
-            # التخطي الذكي: إذا أرسلنا له مسبقاً، لا نكرر
             if str(member.id) in sent_list:
                 continue 
             
             try:
                 await member.send(f"{member.mention}\n\n{self.message_input.value}")
-                save_sent_member(member.id) # حفظ العضو بعد الإرسال
+                save_sent_member(member.id)
                 sent_count += 1
                 
-                # وقت انتظار عشوائي آمن (بين 5 و 10 دقائق = 300 إلى 600 ثانية)
-                wait_time = random.randint(300, 600)
+                # وقت انتظار عشوائي بين 5 و 8 دقائق (300 إلى 480 ثانية)
+                wait_time = random.randint(300, 480)
                 await asyncio.sleep(wait_time)
-                
-            except Exception as e:
-                print(f"حدث خطأ مع {member.name}: {e}")
+            except:
                 continue
         
         is_running = False
-        await interaction.followup.send("🏁 انتهت عملية الإرسال.")
+        await interaction.followup.send("🏁 انتهت العملية.")
 
 @bot.event
 async def on_ready():
     await bot.tree.sync()
-    print(f'البوت {bot.user} جاهز مع السلاش كوماند')
+    print(f'البوت {bot.user} جاهز.')
 
-@bot.tree.command(name="send_dm", description="فتح استمارة إرسال رسالة خاصة للجميع")
+@bot.tree.command(name="send_dm", description="إرسال رسالة خاصة")
 async def send_dm(interaction: discord.Interaction):
     await interaction.response.send_modal(DMModal())
 
-@bot.tree.command(name="status", description="معرفة عدد الرسائل المرسلة")
+@bot.tree.command(name="status", description="عدد الرسائل المرسلة")
 async def status(interaction: discord.Interaction):
-    await interaction.response.send_message(f"تم إرسال الرسالة إلى {sent_count} عضو حتى الآن.", ephemeral=True)
+    await interaction.response.send_message(f"تم إرسال {sent_count} رسالة.", ephemeral=True)
 
-@bot.tree.command(name="stop", description="إيقاف عملية الإرسال الحالية")
+@bot.tree.command(name="stop", description="إيقاف العملية")
 async def stop(interaction: discord.Interaction):
     global is_running
     is_running = False
