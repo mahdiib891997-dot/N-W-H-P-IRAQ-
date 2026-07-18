@@ -90,10 +90,10 @@ async def status(interaction: discord.Interaction):
         ephemeral=True
     )
 
-@bot.tree.command(name="stop", description="إيقاف العملية")
+@bot.tree.command(name="stop", description="إيقاف عملية الارسال")
 async def stop(interaction: discord.Interaction):
     global is_running
     is_running = False
-    await interaction.response.send_message("🛑 تم إيقاف العملية.")
+    await interaction.response.send_message("🛑 تم إيقاف عملية الارسال.")
 
 bot.run(os.getenv('TOKEN'))
