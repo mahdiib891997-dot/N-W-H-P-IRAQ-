@@ -21,9 +21,9 @@ def save_sent_member(member_id):
 
 def get_sent_members():
     if not os.path.exists(SENT_MEMBERS_FILE):
-        return set()
+        return []
     with open(SENT_MEMBERS_FILE, "r") as f:
-        return set(line.strip() for line in f)
+        return [line.strip() for line in f.readlines()]
 
 class DMModal(discord.ui.Modal, title='إرسال رسالة جماعية'):
     message_input = discord.ui.TextInput(
@@ -45,23 +45,19 @@ class DMModal(discord.ui.Modal, title='إرسال رسالة جماعية'):
 
         for member in members:
             if not is_running: break
-            
-            if str(member.id) in sent_list:
-                continue 
+            if str(member.id) in sent_list: continue 
             
             try:
                 await member.send(f"{member.mention}\n\n{self.message_input.value}")
                 save_sent_member(member.id)
                 sent_count += 1
-                
-                # وقت انتظار عشوائي بين 5 و 8 دقائق (300 إلى 480 ثانية)
                 wait_time = random.randint(300, 480)
                 await asyncio.sleep(wait_time)
             except:
                 continue
         
         is_running = False
-        await interaction.followup.send("🏁 انتهت عملية الارسال.")
+        await interaction.followup.send("🏁 انتهت العملية.")
 
 @bot.event
 async def on_ready():
@@ -72,14 +68,32 @@ async def on_ready():
 async def send_dm(interaction: discord.Interaction):
     await interaction.response.send_modal(DMModal())
 
-@bot.tree.command(name="status", description="معرفة عدد الرسائل المرسلة")
+@bot.tree.command(name="status", description="معرفة عدد الرسائل وقائمة آخر الأعضاء")
 async def status(interaction: discord.Interaction):
-    await interaction.response.send_message(f"تم إرسال {sent_count} رسالة.", ephemeral=True)
+    sent_list = get_sent_members()
+    count = len(sent_list)
+    
+    if count == 0:
+        await interaction.response.send_message("لم يتم إرسال أي رسائل بعد.", ephemeral=True)
+        return
 
-@bot.tree.command(name="stop", description="إيقاف عملية الارسال")
+    # جلب آخر 10 أعضاء
+    recent_ids = sent_list[-10:]
+    names = []
+    for uid in recent_ids:
+        member = interaction.guild.get_member(int(uid))
+        names.append(member.name if member else f"ID: {uid}")
+
+    members_list = "\n".join(names)
+    await interaction.response.send_message(
+        f"📊 **إحصائيات الإرسال:**\nعدد الأعضاء: {count}\n\nآخر 10 تم الإرسال لهم:\n{members_list}", 
+        ephemeral=True
+    )
+
+@bot.tree.command(name="stop", description="إيقاف العملية")
 async def stop(interaction: discord.Interaction):
     global is_running
     is_running = False
-    await interaction.response.send_message("🛑 تم إيقاف عملية الارسال.")
+    await interaction.response.send_message("🛑 تم إيقاف العملية.")
 
 bot.run(os.getenv('TOKEN'))
