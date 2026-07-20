@@ -88,13 +88,13 @@ async def stop(interaction: discord.Interaction):
 async def on_ready():
     await bot.tree.sync()
     
-    # 🟣 حالة البث المباشر مع رابط التيك توك (تأكد من وضع رابط حسابك الصحيح هنا)
+    # 🟣 استخدم رابط Twitch لكي يظهر زر (Watch) تماماً مثل الصورة الثانية
     stream_activity = discord.Streaming(
-        name="مباشر الآن: تابعنا على تيك توك!", 
-        url="https://www.tiktok.com/@oo__0oo"
+        name="مباشر الآن: تابعنا على تويتش", 
+        url="https://www.twitch.tv/Right"
     )
     await bot.change_presence(activity=stream_activity)
     
-    print(f'البوت {bot.user} جاهز للعمل وتم تفعيل حالة البث.')
+    print(f'البوت {bot.user} جاهز للعمل وتم تفعيل زر المشاهدة.')
 
 bot.run(os.getenv('TOKEN'))
