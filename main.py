@@ -64,7 +64,6 @@ async def status(interaction: discord.Interaction):
     sent_list = get_sent_members_list()
     count = len(sent_list)
     
-    # جلب آخر 10 أعضاء
     recent_ids = sent_list[-10:]
     names = []
     for uid in recent_ids:
@@ -88,6 +87,14 @@ async def stop(interaction: discord.Interaction):
 @bot.event
 async def on_ready():
     await bot.tree.sync()
-    print(f'البوت {bot.user} جاهز للعمل.')
+    
+    # 🟣 حالة البث المباشر مع رابط التيك توك (تأكد من وضع رابط حسابك الصحيح هنا)
+    stream_activity = discord.Streaming(
+        name="مباشر الآن: تابعنا على تيك توك!", 
+        url="https://www.tiktok.com/@oo__0oo"
+    )
+    await bot.change_presence(activity=stream_activity)
+    
+    print(f'البوت {bot.user} جاهز للعمل وتم تفعيل حالة البث.')
 
 bot.run(os.getenv('TOKEN'))
