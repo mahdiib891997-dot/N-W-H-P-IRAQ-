@@ -90,7 +90,7 @@ async def on_ready():
     
     # 🟣 استخدم رابط Twitch لكي يظهر زر (Watch) تماماً مثل الصورة الثانية
     stream_activity = discord.Streaming(
-        name="مباشر الآن: تابعنا على تويتش", 
+        name="N W | H P IRAQ", 
         url="https://www.twitch.tv/Right"
     )
     await bot.change_presence(activity=stream_activity)
